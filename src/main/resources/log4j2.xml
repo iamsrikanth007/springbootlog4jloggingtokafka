@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" name="log4jkafkademo" packages="com.shareknowledge.springbootlog4jloggingtokafka">
+    <Properties>
+        <property name="currentModuleName">${bundle:application:module.name}</property>
+        <property name="kafkaTopic">${bundle:application:topic.name}</property>
+        <property name="kafkaBootstrapServers">${bundle:application:spring.kafka.bootstrap-servers}</property>
+        <property name="kafkaSaslJaasConfig">${bundle:application:spring.kafka.properties.sasl.jaas.config}</property>
+        <property name="kafkaSaslMechanism">${bundle:application:spring.kafka.properties.sasl.mechanism}</property>
+        <property name="kafkaSecurityProtocol">${bundle:application:spring.kafka.properties.security.protocol}</property>
+    </Properties>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+
+        <File name="MyFile" fileName="${currentModuleName}.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+        </File>
+
+        <Kafka name="kafkaAppender" topic="${kafkaTopic}">
+            <JSONLayout />
+            <Property name="bootstrap.servers">${kafkaBootstrapServers}</Property>
+            <Property name="sasl.jaas.config">${kafkaSaslJaasConfig}</Property>
+            <Property name="sasl.mechanism">${kafkaSaslMechanism}</Property>
+            <Property name="security.protocol">${kafkaSecurityProtocol}</Property>
+        </Kafka>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="MyFile"/>
+            <AppenderRef ref="kafkaAppender"/>
+        </Root>
+        <Logger name="org.apache.kafka" level="INFO" />
+    </Loggers>
+</Configuration>
